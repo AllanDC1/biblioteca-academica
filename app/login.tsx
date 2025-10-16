@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { router } from "expo-router";
+import { useState } from "react";
+import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import api from "../services/api";
 
 export default function LoginScreen() {
@@ -12,7 +12,7 @@ export default function LoginScreen() {
       const response = await api.post("/login", { email, senha });
       if (response.status === 200) {
         Alert.alert("Sucesso", "Login realizado com sucesso!");
-        router.push("./home");
+        router.push("/livros");
       }
     } catch (error: any) {
       Alert.alert("Erro", error.response?.data || "Falha ao fazer login.");
