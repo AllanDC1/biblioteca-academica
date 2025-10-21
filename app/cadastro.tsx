@@ -1,22 +1,28 @@
-import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
-import { router } from "expo-router";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import api from "../services/api";
+import { useRouter } from "expo-router";
 
 export default function CadastroScreen() {
+  const router = useRouter();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
   const handleCadastro = async () => {
+    if (!nome || !email || !senha) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+
     try {
-      const response = await api.post("/usuarios", { nome, email, senha });
+      const response = await api.post("/cadastro", { nome, email, senha });
       if (response.status === 201) {
-        Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
-        router.push("./login");
+        Alert.alert("Sucesso", "Cadastro realizado! Faça login.");
+        router.back();
       }
-    } catch (error: any) {
-      Alert.alert("Erro", error.response?.data || "Falha ao cadastrar.");
+    } catch {
+      Alert.alert("Erro", "Não foi possível realizar o cadastro.");
     }
   };
 
@@ -24,33 +30,26 @@ export default function CadastroScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Cadastro</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nome"
-        value={nome}
-        onChangeText={setNome}
-      />
-
+      <TextInput style={styles.input} placeholder="Nome" value={nome} onChangeText={setNome} />
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Senha"
-        secureTextEntry
         value={senha}
         onChangeText={setSenha}
+        secureTextEntry
       />
 
-      <Button title="Cadastrar" onPress={handleCadastro} />
-
-      <Text style={styles.link} onPress={() => router.push("./login")}>
-        Já tem conta? Faça login
-      </Text>
+      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -59,25 +58,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     padding: 20,
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    textAlign: "center",
     marginBottom: 30,
   },
   input: {
-    borderWidth: 1,
+    width: "100%",
+    height: 45,
     borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
     marginBottom: 15,
+    paddingHorizontal: 10,
   },
-  link: {
-    textAlign: "center",
-    color: "#007BFF",
-    marginTop: 20,
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

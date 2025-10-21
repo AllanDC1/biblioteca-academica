@@ -18,7 +18,7 @@ export default function DetalhesLivro() {
 
   const pegarLivro = async () => {
     try {
-      await api.post(`/livros/${id}/emprestar?usuarioId=${usuarioId}`);
+      await api.post(`/livros/reservar/${id}?usuarioId=${usuarioId}`);
       Alert.alert("Sucesso", "Empréstimo registrado e livro marcado como emprestado!");
       setLivro({ ...livro, emprestado: true }); // Atualiza status na tela
     } catch (e: any) {
