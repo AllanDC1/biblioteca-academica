@@ -1,40 +1,36 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
 import { useRouter } from "expo-router";
 
-export default function LoginScreen() {
+export default function CadastroScreen() {
   const router = useRouter();
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  const handleLogin = async () => {
-    if (!email || !senha) {
+  const handleCadastro = async () => {
+    if (!nome || !email || !senha) {
       Alert.alert("Erro", "Preencha todos os campos.");
       return;
     }
 
     try {
-      const response = await api.post("/login", { email, senha });
-      if (response.status === 201 && response.data) {
-        await AsyncStorage.setItem("usuario", JSON.stringify(response.data));
-        Alert.alert("Sucesso", "Login realizado com sucesso!");
-        router.replace("./home");
+      const response = await api.post("/cadastro", { nome, email, senha });
+      if (response.status === 201) {
+        Alert.alert("Sucesso", "Cadastro realizado! Faça login.");
+        router.back();
       }
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        Alert.alert("Erro", "Email ou senha inválidos.");
-      } else {
-        Alert.alert("Erro", "Não foi possível conectar ao servidor.");
-      }
+    } catch {
+      Alert.alert("Erro", "Não foi possível realizar o cadastro.");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sistema de Biblioteca</Text>
+      <Text style={styles.title}>Cadastro</Text>
 
+      <TextInput style={styles.input} placeholder="Nome" value={nome} onChangeText={setNome} />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -51,12 +47,8 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => router.push("/cadastro")}>
-        <Text style={styles.link}>Não tem conta? Cadastre-se</Text>
+      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -95,9 +87,5 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-  },
-  link: {
-    color: "#007AFF",
-    marginTop: 15,
   },
 });
