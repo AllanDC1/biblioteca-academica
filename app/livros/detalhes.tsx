@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import api from "../../services/api";
-
-// Supondo que você tenha o usuário logado salvo em algum lugar, ex: AsyncStorage
-const usuarioId = 1; // Substitua pelo ID real do usuário logado
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DetalhesLivro() {
   const { id } = useLocalSearchParams();
@@ -12,38 +10,54 @@ export default function DetalhesLivro() {
 
   useEffect(() => {
     api.get(`/livros/${id}`).then((res) => setLivro(res.data));
-  }, [id]);
+  }, [id]);  
 
-  if (!livro) return <Text>Carregando...</Text>;
-
-  const pegarLivro = async () => {
+  async function handleReservar() {
     try {
-      await api.post(`/livros/reservar/${id}?usuarioId=${usuarioId}`);
-      Alert.alert("Sucesso", "Empréstimo registrado e livro marcado como emprestado!");
-      setLivro({ ...livro, emprestado: true }); // Atualiza status na tela
-    } catch (e: any) {
-      Alert.alert("Erro", e.response?.data || "Falha ao pegar livro");
+      const usuario = await AsyncStorage.getItem("usuario");
+      if (!usuario) {
+        Alert.alert("Erro", "Usuário não encontrado");
+        return;
+      }
+      if (livro.reservado) {
+        Alert.alert("Erro", "Livro já está reservado");
+        return;
+      }
+      const { id: idUsuario } = JSON.parse(usuario);
+
+      await api.post(`/livros/reservar/${id}`, idUsuario, {headers: { "Content-Type": "application/json" },});
+      Alert.alert("Sucesso", "Livro reservado com sucesso!");
+      router.back();
+    } catch (e) {
+      Alert.alert("Erro: " + e, "Não foi possível reservar o livro");
     }
-  };
+  }
+  
+  if (!livro) return <Text>Carregando...</Text>;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{livro.titulo}</Text>
-      <Text style={styles.author}>{livro.autor}</Text>
+      <Text style={styles.author}>Autor: {livro.autor}</Text>
+      <Text style={styles.text}>{livro.descricao}</Text>
       <Text style={{ marginBottom: 10 }}>
-        {livro.emprestado ? "Status: Emprestado" : "Status: Disponível"}
+        Status: {livro.reservado ? "Reservado" : "Disponível"}
       </Text>
 
-      {!livro.emprestado && (
-        <Button title="Pegar Livro / Registrar Empréstimo" onPress={pegarLivro} />
+      {!livro.reservado && (
+        <TouchableOpacity style={styles.button} onPress={handleReservar}>
+          <Text style={styles.buttonText}>Reservar Livro</Text>
+        </TouchableOpacity>
       )}
-      {livro.emprestado && <Text>Livro já está emprestado.</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 15 },
   author: { fontSize: 18, marginBottom: 10, color: "#555" },
+  text: { fontSize: 16, marginBottom: 8 },
+  button: { backgroundColor: "#2ecc71", padding: 15, borderRadius: 8, marginTop: 20 },
+  buttonText: { color: "white", textAlign: "center", fontSize: 16 },
 });
