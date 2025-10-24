@@ -4,7 +4,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import api from "../../services/api";
 
 export default function CadastroLivro() {
-  const { id } = useLocalSearchParams(); // se existir, estamos editando
+  const { id } = useLocalSearchParams();
   const [titulo, setTitulo] = useState("");
   const [autor, setAutor] = useState("");
 

@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import api from "../../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Usuario } from "@/types/Usuario";
+import { Livro } from "@/types/Livro";
 
 export default function ListaLivros() {
-  const [livros, setLivros] = useState<any[]>([]);
+  const [livros, setLivros] = useState<Livro[]>([]);
   const [busca, setBusca] = useState("");
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
 
   const listarLivros = async () => {
     try {
@@ -18,7 +22,18 @@ export default function ListaLivros() {
 
   useEffect(() => {
     listarLivros();
-  }, []);
+    const carregarUsuario = async () => {
+      const dados = await AsyncStorage.getItem("usuario");
+      if (dados) setUsuario(JSON.parse(dados));
+    };
+    carregarUsuario();
+  }, []); 
+
+  useFocusEffect(
+    useCallback(() => {
+      listarLivros();
+    }, [])
+  );
 
   const livrosFiltrados = livros.filter(
     (l) =>
@@ -28,8 +43,6 @@ export default function ListaLivros() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Livros da Biblioteca</Text>
-
       <TextInput
         placeholder="Buscar por título ou autor"
         value={busca}
@@ -50,13 +63,22 @@ export default function ListaLivros() {
           </TouchableOpacity>
         )}
       />
+
+      {usuario?.admin && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("./livros/cadastro")}
+        >
+          <Text style={styles.buttonText}>Adicionar Livro</Text>
+        </TouchableOpacity>
+      )}
+        
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 15 },
   item: {
     padding: 15,
@@ -65,7 +87,6 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   itemTitle: { fontWeight: "bold", fontSize: 16 },
-  card: { padding: 15, borderWidth: 1, borderColor: "#ddd", borderRadius: 8, marginBottom: 10 },
-  titulo: { fontSize: 18, fontWeight: "bold" },
-  autor: { color: "#555" },
+  button: { backgroundColor: "#2ecc71", padding: 15, borderRadius: 8, marginTop: 20 },
+  buttonText: { color: "white", textAlign: "center", fontSize: 16 },
 });

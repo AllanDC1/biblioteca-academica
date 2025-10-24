@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Switch } from "react-native";
 import api from "../services/api";
 import { useRouter } from "expo-router";
 
@@ -8,6 +8,7 @@ export default function CadastroScreen() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleCadastro = async () => {
     if (!nome || !email || !senha) {
@@ -16,7 +17,7 @@ export default function CadastroScreen() {
     }
 
     try {
-      const response = await api.post("/cadastro", { nome, email, senha });
+      const response = await api.post("/cadastro", { nome, email, senha, admin: isAdmin });
       if (response.status === 201) {
         Alert.alert("Sucesso", "Cadastro realizado! Faça login.");
         router.back();
@@ -45,7 +46,16 @@ export default function CadastroScreen() {
         value={senha}
         onChangeText={setSenha}
         secureTextEntry
-      />
+      />      
+
+      <View style={styles.switchContainer}>
+        <Text>Admin</Text>
+        <Switch
+          value={isAdmin}
+          onValueChange={setIsAdmin}
+          trackColor={{ false: "#ccc", true: "#4CAF50" }}
+        />
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleCadastro}>
         <Text style={styles.buttonText}>Cadastrar</Text>
@@ -87,5 +97,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
 });
