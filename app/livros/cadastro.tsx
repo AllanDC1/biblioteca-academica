@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import api from "../../services/api";
 import { Livro } from "@/types/Livro";
 
 export default function NovoLivro() {
-  const router = useRouter();
   const [livro, setLivro] = useState<Livro | null>(null);
 
   async function handleAdicionarLivro() {
