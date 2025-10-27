@@ -30,7 +30,7 @@ export default function HomeScreen() {
         <Text style={styles.buttonText}>Consultar Livros</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.buttonNavigate} onPress={() => router.push("./emprestimos")}>
-        <Text style={styles.buttonText}>Consultar Empréstimos</Text>
+        <Text style={styles.buttonText}>Histórico de Empréstimos</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
