@@ -56,7 +56,7 @@ export default function DetalhesLivro() {
   async function handleSalvarEdicao() {
     try {
       const response = await api.patch("/livros", livroEditado);
-      if (response.status === 200) {
+      if (response.status === 201) {
         Alert.alert("Sucesso", "Livro atualizado com sucesso!");
         setModalVisible(false);
         router.back();
@@ -85,7 +85,7 @@ export default function DetalhesLivro() {
 
       {usuario?.admin && (
         <>
-          <TouchableOpacity style={styles.button} onPress={() => {
+          <TouchableOpacity style={styles.buttonEdit} onPress={() => {
               setLivroEditado(livro);
               setModalVisible(true);
             }
@@ -93,7 +93,7 @@ export default function DetalhesLivro() {
             <Text style={styles.buttonText}>Editar Livro</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.button} onPress={handleDeletar}>
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleDeletar}>
             <Text style={styles.buttonText}>Excluir Livro</Text>
           </TouchableOpacity>
         </>
@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
   author: { fontSize: 18, marginBottom: 10, color: "#555" },
   text: { fontSize: 16, marginBottom: 8 },
   button: { backgroundColor: "#2ecc71", padding: 15, borderRadius: 8, marginTop: 20 },
+  buttonEdit: { backgroundColor: "#3b83d4ff", padding: 15, borderRadius: 8, marginTop: 20 },
+  buttonDelete: { backgroundColor: "red", padding: 15, borderRadius: 8, marginTop: 20 },
   buttonText: { color: "white", textAlign: "center", fontSize: 16 },
   modalOverlay: {
     flex: 1,
