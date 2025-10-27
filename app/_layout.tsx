@@ -7,7 +7,8 @@ export default function Layout() {
       <Stack.Screen name="livros/index" options={{ title: "Livros da Biblioteca" }} />
       <Stack.Screen name="cadastro" options={{ title: "Cadastro" }} />
       <Stack.Screen name="livros/cadastro" options={{ title: "Adicionar Novo Livro" }} />
-      <Stack.Screen name="home" options={{ title: "Biblioteca" }} />      
+      <Stack.Screen name="home" options={{ title: "Biblioteca" }} />
+      <Stack.Screen name="emprestimos" options={{ title: "Meus Empréstimos" }} />
     </Stack>
   );
 }
