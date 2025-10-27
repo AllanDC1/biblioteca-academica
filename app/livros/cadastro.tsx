@@ -1,49 +1,94 @@
-import { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
+import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { useRouter } from "expo-router";
 import api from "../../services/api";
+import { Livro } from "@/types/Livro";
 
-export default function CadastroLivro() {
-  const { id } = useLocalSearchParams(); // se existir, estamos editando
-  const [titulo, setTitulo] = useState("");
-  const [autor, setAutor] = useState("");
+export default function NovoLivro() {
+  const router = useRouter();
+  const [livro, setLivro] = useState<Livro | null>(null);
 
-  useEffect(() => {
-    if (id) {
-      api.get(`/livros/${id}`).then((res) => {
-        setTitulo(res.data.titulo);
-        setAutor(res.data.autor);
-      });
-    }
-  }, [id]);
-
-  const salvarLivro = async () => {
+  async function handleAdicionarLivro() {
     try {
-      if (id) {
-        await api.put(`/livros/${id}`, { titulo, autor });
-        Alert.alert("Sucesso", "Livro atualizado!");
-      } else {
-        await api.post("/livros", { titulo, autor });
-        Alert.alert("Sucesso", "Livro cadastrado!");
+      if (!livro?.titulo || !livro?.autor) {
+        return Alert.alert("Atenção", "Preencha pelo menos o título e o autor.");
       }
-      router.push("./livros");
-    } catch (error : any) {
-      Alert.alert("Erro", error.response?.data || "Falha ao salvar livro");
+
+      const response = await api.post("/livros", livro);
+
+      if (response.status === 201) {
+        Alert.alert("Sucesso", "Livro adicionado com sucesso!");
+        router.back();
+      }
+    } catch (e) {
+      Alert.alert("Erro: " + e, "Não foi possível adicionar o livro.");
     }
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{id ? "Editar Livro" : "Cadastrar Livro"}</Text>
-      <TextInput style={styles.input} placeholder="Título" value={titulo} onChangeText={setTitulo} />
-      <TextInput style={styles.input} placeholder="Autor" value={autor} onChangeText={setAutor} />
-      <Button title={id ? "Atualizar" : "Cadastrar"} onPress={salvarLivro} />
-    </View>
+    <ScrollView style={styles.container}>      
+
+      <TextInput
+        placeholder="Título"
+        value={livro?.titulo}
+        onChangeText={(texto) => setLivro({ ...livro!, titulo: texto })}
+        style={styles.input}
+      />
+
+      <TextInput
+        placeholder="Autor"
+        value={livro?.autor}
+        onChangeText={(texto) => setLivro({ ...livro!, autor: texto })}
+        style={styles.input}
+      />
+
+      <TextInput
+        placeholder="Descrição"
+        value={livro?.descricao}
+        multiline
+        onChangeText={(texto) => setLivro({ ...livro!, descricao: texto })}
+        style={styles.textArea}
+      />
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleAdicionarLivro}
+      >
+        <Text style={styles.buttonText}>Salvar Livro</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 15 },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 8,
+    height: 100,
+  },
+  button: {
+    backgroundColor: "#2ecc71",
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+  },
 });

@@ -2,18 +2,13 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-
-interface Usuario {
-  id: number;
-  nome: string;
-  email: string;
-}
+import { Usuario } from "@/types/Usuario";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
-  useEffect(() => {
+  useEffect(() => {    
     const carregarUsuario = async () => {
       const dados = await AsyncStorage.getItem("usuario");
       if (dados) setUsuario(JSON.parse(dados));
