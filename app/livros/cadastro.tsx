@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, View } from "react-native";
 import { router } from "expo-router";
 import api from "../../services/api";
 import { Livro } from "@/types/Livro";
@@ -25,7 +25,7 @@ export default function NovoLivro() {
   }
 
   return (
-    <ScrollView style={styles.container}>      
+    <View style={styles.container}>      
 
       <TextInput
         placeholder="Título"
@@ -55,7 +55,7 @@ export default function NovoLivro() {
       >
         <Text style={styles.buttonText}>Salvar Livro</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
   },
   input: {
     borderWidth: 1,
