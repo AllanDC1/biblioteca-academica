@@ -9,6 +9,7 @@ export default function Layout() {
       <Stack.Screen name="livros/cadastro" options={{ title: "Adicionar Novo Livro" }} />
       <Stack.Screen name="home" options={{ title: "Biblioteca" }} />
       <Stack.Screen name="emprestimos" options={{ title: "Meus Empréstimos" }} />
+      <Stack.Screen name="atrasados" options={{ title: "Empréstimos Atrasados" }} />
     </Stack>
   );
 }
