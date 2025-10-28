@@ -32,6 +32,13 @@ export default function HomeScreen() {
       <TouchableOpacity style={styles.buttonNavigate} onPress={() => router.push("./emprestimos")}>
         <Text style={styles.buttonText}>Histórico de Empréstimos</Text>
       </TouchableOpacity>
+
+      {usuario?.admin && (
+        <TouchableOpacity style={styles.buttonNavigate} onPress={() => router.push("./atrasados")}>
+          <Text style={styles.buttonText}>Empréstimos Atrasados</Text>
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
@@ -42,7 +49,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
   text: { fontSize: 22, marginBottom: 20 },
-  buttonLogout: { backgroundColor: "#FF3B30", padding: 10, borderRadius: 8 },
-  buttonNavigate: { backgroundColor: "#007AFF", padding: 10, borderRadius: 8, marginBottom: 10 },
+  buttonLogout: { backgroundColor: "#FF3B30", padding: 10, borderRadius: 8, width: 80, alignItems: "center" },
+  buttonNavigate: { backgroundColor: "#007AFF", padding: 10, borderRadius: 8, marginBottom: 10, width: 200, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "bold" },
 });

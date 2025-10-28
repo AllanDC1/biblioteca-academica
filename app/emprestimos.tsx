@@ -41,7 +41,8 @@ export default function EmprestimosScreen() {
     try {
       const response = await api.patch(`/emprestimos/devolver/${id}`);
       if (response.status === 200) {
-        Alert.alert("Sucesso", "Livro devolvido com sucesso!");        
+        Alert.alert("Sucesso", "Livro devolvido com sucesso!");
+        carregarEmprestimos(usuario!.id);
       }
     } catch (e) {
       Alert.alert("Erro: " + e, "Não foi possível devolver o livro.");
