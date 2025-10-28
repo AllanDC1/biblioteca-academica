@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, View } from "react-native";
+import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, View, Image } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import api from "../../services/api";
 import { Livro } from "@/types/Livro";
 
 export default function NovoLivro() {
   const [livro, setLivro] = useState<Livro | null>(null);
+  const [imagem, setImagem] = useState<string | null>(null);
 
   async function handleAdicionarLivro() {
     try {
@@ -13,6 +15,13 @@ export default function NovoLivro() {
         return Alert.alert("Atenção", "Preencha pelo menos o título e o autor.");
       }
 
+      if (imagem) {
+        const url = await handleUploadImagem();
+        setLivro({ ...livro!, imagemUrl: url });
+        console.log("URL da imagem enviada:", livro.imagemUrl);
+      }
+
+      console.log("Livro a ser enviado:", livro);
       const response = await api.post("/livros", livro);
 
       if (response.status === 201) {
@@ -22,6 +31,38 @@ export default function NovoLivro() {
     } catch (e) {
       Alert.alert("Erro: " + e, "Não foi possível adicionar o livro.");
     }
+  }
+
+  async function selecionarImagem() {
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 1,
+    });
+
+    if (!resultado.canceled) {
+      setImagem(resultado.assets[0].uri);
+    }
+  }
+
+  async function handleUploadImagem() {
+    if (!imagem) return null;
+
+    const nomeArquivo = livro?.titulo
+    ? livro.titulo.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_") + ".jpg"
+    : "livro.jpg";
+
+    const formData = new FormData();
+    formData.append("file", {
+      uri: imagem,
+      name: nomeArquivo,
+      type: "image/jpeg",
+    } as any);
+
+    const response = await api.post("/livros/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return response.data.url;
   }
 
   return (
@@ -48,6 +89,16 @@ export default function NovoLivro() {
         onChangeText={(texto) => setLivro({ ...livro!, descricao: texto })}
         style={styles.textArea}
       />
+
+      <TouchableOpacity style={styles.uploadButton} onPress={selecionarImagem}>
+        <Text style={styles.uploadText}>
+          {imagem ? "Trocar Imagem" : "Selecionar Imagem"}
+        </Text>
+      </TouchableOpacity>
+
+      {imagem && (
+        <Image source={{ uri: imagem }} style={styles.preview} />
+      )}
 
       <TouchableOpacity
         style={styles.button}
@@ -89,5 +140,22 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontSize: 16,
+  },
+  uploadButton: {
+    backgroundColor: "#3498db",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  uploadText: {
+    color: "white",
+    fontSize: 16,
+  },
+  preview: {
+    width: "100%",
+    height: 300,
+    borderRadius: 8,
+    marginTop: 10,
   },
 });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, Modal, Button } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, Modal, Button, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import api from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -71,6 +71,9 @@ export default function DetalhesLivro() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{livro.titulo}</Text>
+      {livro.imagemUrl && (
+        <Image source={{ uri: livro.imagemUrl }} style={{ width: '100%', height: 200, marginBottom: 15 }} />
+      )}
       <Text style={styles.author}>Autor: {livro.autor}</Text>
       <Text style={styles.text}>{livro.descricao}</Text>
       <Text style={{ marginBottom: 10 }}>
