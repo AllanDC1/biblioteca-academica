@@ -15,14 +15,16 @@ export default function NovoLivro() {
         return Alert.alert("Atenção", "Preencha pelo menos o título e o autor.");
       }
 
+      let livroParaEnviar = { ...livro };
+
       if (imagem) {
         const url = await handleUploadImagem();
-        setLivro({ ...livro!, imagemUrl: url });
-        console.log("URL da imagem enviada:", livro.imagemUrl);
+        livroParaEnviar.imagemUrl = url;
+        console.log("URL da imagem enviada:", url);
       }
 
-      console.log("Livro a ser enviado:", livro);
-      const response = await api.post("/livros", livro);
+      console.log("Livro a ser enviado:", livroParaEnviar);
+      const response = await api.post("/livros", livroParaEnviar);
 
       if (response.status === 201) {
         Alert.alert("Sucesso", "Livro adicionado com sucesso!");
@@ -62,7 +64,7 @@ export default function NovoLivro() {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    return response.data.url;
+    return response.data;
   }
 
   return (

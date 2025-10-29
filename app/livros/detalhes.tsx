@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, Modal, Button, Image } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, Modal, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import api from "../../services/api";
+import api, { BASE_URL } from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Livro } from "@/types/Livro";
 import { Usuario } from "@/types/Usuario";
@@ -72,7 +72,7 @@ export default function DetalhesLivro() {
     <View style={styles.container}>
       <Text style={styles.title}>{livro.titulo}</Text>
       {livro.imagemUrl && (
-        <Image source={{ uri: livro.imagemUrl }} style={{ width: '100%', height: 200, marginBottom: 15 }} />
+        <Image source={{ uri: `${BASE_URL}${livro.imagemUrl}` }} style={styles.preview} />
       )}
       <Text style={styles.author}>Autor: {livro.autor}</Text>
       <Text style={styles.text}>{livro.descricao}</Text>
@@ -81,7 +81,7 @@ export default function DetalhesLivro() {
       </Text>
 
       {!livro.reservado && (
-        <TouchableOpacity style={styles.button} onPress={handleReservar}>
+        <TouchableOpacity style={styles.buttonReserve} onPress={handleReservar}>
           <Text style={styles.buttonText}>Reservar Livro</Text>
         </TouchableOpacity>
       )}
@@ -136,8 +136,19 @@ export default function DetalhesLivro() {
             />
 
             <View style={styles.modalButtons}>
-              <Button title="Salvar" onPress={handleSalvarEdicao} />
-              <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} />
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "#2ecc71" }]}
+                onPress={handleSalvarEdicao}
+              >
+                <Text style={styles.buttonText}>Salvar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: "red" }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -152,10 +163,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 15 },
   author: { fontSize: 18, marginBottom: 10, color: "#555" },
   text: { fontSize: 16, marginBottom: 8 },
-  button: { backgroundColor: "#2ecc71", padding: 15, borderRadius: 8, marginTop: 20 },
+  buttonReserve: { backgroundColor: "#2ecc71", padding: 15, borderRadius: 8, marginTop: 20 },
   buttonEdit: { backgroundColor: "#3b83d4ff", padding: 15, borderRadius: 8, marginTop: 20 },
   buttonDelete: { backgroundColor: "red", padding: 15, borderRadius: 8, marginTop: 20 },
-  buttonText: { color: "white", textAlign: "center", fontSize: 16 },
+  buttonText: { color: "#fff", textAlign: "center", fontSize: 16, fontWeight: "bold" },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -187,4 +198,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginTop: 10,
   },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  preview: { width: '100%', height: 300, marginBottom: 10, borderRadius: 8},
 });
