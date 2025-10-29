@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, View, Image } from "react-native";
+import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, View, Image, Modal } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import api from "../../services/api";
@@ -8,6 +8,8 @@ import { Livro } from "@/types/Livro";
 export default function NovoLivro() {
   const [livro, setLivro] = useState<Livro | null>(null);
   const [imagem, setImagem] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
 
   async function handleAdicionarLivro() {
     try {
@@ -35,14 +37,32 @@ export default function NovoLivro() {
     }
   }
 
-  async function selecionarImagem() {
-    const resultado = await ImagePicker.launchImageLibraryAsync({
+  async function abrirCamera() {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      return Alert.alert("Permissão negada", "Acesso à câmera é necessário.");
+    }
+  
+    const resultado = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
-      quality: 1,
+      quality: 0.5,
     });
-
+  
     if (!resultado.canceled) {
       setImagem(resultado.assets[0].uri);
+      setModalVisible(false);
+    }
+  }
+  
+  async function abrirGaleria() {
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.5,
+    });
+  
+    if (!resultado.canceled) {
+      setImagem(resultado.assets[0].uri);
+      setModalVisible(false);
     }
   }
 
@@ -92,14 +112,14 @@ export default function NovoLivro() {
         style={styles.textArea}
       />
 
-      <TouchableOpacity style={styles.uploadButton} onPress={selecionarImagem}>
+      <TouchableOpacity style={styles.uploadButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.uploadText}>
           {imagem ? "Trocar Imagem" : "Selecionar Imagem"}
         </Text>
       </TouchableOpacity>
 
       {imagem && (
-        <Image source={{ uri: imagem }} style={styles.preview} />
+        <Image source={{ uri: imagem }} style={styles.preview} resizeMode="contain" />
       )}
 
       <TouchableOpacity
@@ -108,6 +128,34 @@ export default function NovoLivro() {
       >
         <Text style={styles.buttonText}>Salvar Livro</Text>
       </TouchableOpacity>
+
+      <Modal
+        transparent
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Escolher Imagem</Text>
+
+            <TouchableOpacity style={styles.modalButton} onPress={abrirCamera}>
+              <Text style={styles.modalButtonText}>Tirar Foto com Câmera</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modalButton} onPress={abrirGaleria}>
+              <Text style={styles.modalButtonText}>Escolher da Galeria</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modalButton, { backgroundColor: "#e74c3c" }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -160,4 +208,35 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 10,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+  modalButton: {
+    backgroundColor: "#3498db",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginVertical: 5,
+    width: "100%",
+  },
+  modalButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "600",
+  },  
 });

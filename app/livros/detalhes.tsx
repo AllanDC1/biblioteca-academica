@@ -72,7 +72,7 @@ export default function DetalhesLivro() {
     <View style={styles.container}>
       <Text style={styles.title}>{livro.titulo}</Text>
       {livro.imagemUrl && (
-        <Image source={{ uri: `${BASE_URL}${livro.imagemUrl}` }} style={styles.preview} />
+        <Image source={{ uri: `${BASE_URL}${livro.imagemUrl}` }} style={styles.preview} resizeMode="contain" />
       )}
       <Text style={styles.author}>Autor: {livro.autor}</Text>
       <Text style={styles.text}>{livro.descricao}</Text>
