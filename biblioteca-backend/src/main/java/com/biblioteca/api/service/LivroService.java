@@ -26,7 +26,7 @@ public class LivroService {
 
     private final LivroRepository livroRepository;
     private final EmprestimoRepository emprestimoRepository;
-    private static final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "app/uploads/";
 
     public List<Livro> buscarTodos() {
         return livroRepository.findAll();
@@ -61,22 +61,17 @@ public class LivroService {
                 return ResponseEntity.badRequest().body("Arquivo vazio!");
             }
 
-            // Garante que o diretório de upload existe
             File diretorio = new File(UPLOAD_DIR);
             if (!diretorio.exists()) {
                 diretorio.mkdirs();
             }
 
-            // Gera um nome único pro arquivo
             String nomeArquivo = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-            // Caminho completo no servidor
             Path caminho = Paths.get(UPLOAD_DIR + nomeArquivo);
 
-            // Salva o arquivo
             Files.copy(file.getInputStream(), caminho, StandardCopyOption.REPLACE_EXISTING);
 
-            // Retorna o caminho relativo (pra salvar no banco)
             String caminhoRelativo = "/uploads/" + nomeArquivo;
             return ResponseEntity.ok(caminhoRelativo);
 

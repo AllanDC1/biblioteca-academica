@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.biblioteca</groupId>
 	<artifactId>biblioteca-backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>biblioteca-backend</name>
 	<description>Backend para Sistema de Biblioteca</description>
 	<url/>
