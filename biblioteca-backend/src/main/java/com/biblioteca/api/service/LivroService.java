@@ -26,7 +26,7 @@ public class LivroService {
 
     private final LivroRepository livroRepository;
     private final EmprestimoRepository emprestimoRepository;
-    private static final String UPLOAD_DIR = "app/uploads/";
+    private static final String UPLOAD_DIR = "/app/uploads/";
 
     public List<Livro> buscarTodos() {
         return livroRepository.findAll();

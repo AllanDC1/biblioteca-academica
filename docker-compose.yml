@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:9.4
     container_name: mysql
     restart: always
     environment:
@@ -12,8 +12,6 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - app-network
 
   backend:
     build: ./biblioteca-backend
@@ -29,8 +27,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: user123
     volumes:
       - ./biblioteca-backend/uploads:/app/uploads
-    networks:
-      - app-network
 
   frontend:
     build: ./biblioteca-frontend
@@ -39,16 +35,12 @@ services:
       - backend
     ports:
       - "19000:19000"
-      - "19001:19001"
-      - "19002:19002"
-    networks:
-      - app-network
     environment:
       API_URL: http://backend:8080
+    command: ["npx", "expo", "start", "--tunnel"]
+    stdin_open: true
+    tty: true
+
 
 volumes:
   db_data:
-
-networks:
-  app-network:
-    driver: bridge
