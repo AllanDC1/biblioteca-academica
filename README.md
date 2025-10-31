@@ -101,9 +101,17 @@ O primeiro passo é clonar o projeto para o seu computador com o seguinte comand
 git clone https://github.com/AllanDC1/biblioteca-academica.git
 ```
 
+<h3>Alterar IP</h3>
+
+Depois de clonado, abra o arquivo `api.ts` no caminho `biblioteca-frontend\services\api.ts`, em qualquer editor de texto, e altere a variável `ip` com o IPv4 do seu dispositivo
+
+```bash
+const ip = "192.168.0.0"; // Substitua aqui pelo o IPv4 do seu dispositivo
+```
+
 <h3>Buildar e Rodar</h3>
 
-Depois de clonado, dentro da raíz do diretório recém-criado, no terminal execute o comando:
+Depois disso tudo, basta ir na raíz do diretório recém-criado, e executar no terminal o comando:
 
 ```bash
 docker compose up --build
