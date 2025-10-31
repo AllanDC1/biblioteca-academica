@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:9.4
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: biblioteca
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./biblioteca-backend
+    container_name: backend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/biblioteca
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: user123
+    volumes:
+      - ./biblioteca-backend/uploads:/app/uploads
+
+  frontend:
+    build: ./biblioteca-frontend
+    container_name: frontend
+    depends_on:
+      - backend
+    ports:
+      - "19000:19000"
+    environment:
+      API_URL: http://backend:8080
+    command: ["npx", "expo", "start", "--tunnel"]
+    stdin_open: true
+    tty: true
+
+
+volumes:
+  db_data:
