@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const BASE_URL = "http://192.168.15.7:8080";
+const ip = "192.168.0.0"; // Substitua aqui pelo o IPv4 do seu dispositivo
+
+export const BASE_URL = "http://" + ip + ":8080";
 
 const api = axios.create({
   baseURL: BASE_URL,

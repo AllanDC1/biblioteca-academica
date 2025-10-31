@@ -35,8 +35,6 @@ services:
       - backend
     ports:
       - "19000:19000"
-    environment:
-      API_URL: http://backend:8080
     command: ["npx", "expo", "start", "--tunnel"]
     stdin_open: true
     tty: true
